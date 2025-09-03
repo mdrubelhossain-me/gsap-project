@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas, SVG & Chart Demo</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.2.0/svg.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      padding: 20px;
+    }
+    .box {
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fabric.js Canvas -->
+  <div class="box">
+    <h2>Fabric.js (Canvas)</h2>
+    <canvas id="c" width="400" height="300" style="border:1px solid black;"></canvas>
+  </div>
+
+  <!-- SVG.js Drawing -->
+  <div class="box">
+    <h2>SVG.js (SVG Animation)</h2>
+    <div id="drawing" style="width:400px; height:300px; border:1px solid black;"></div>
+    <button id="animateBtn">Animate Circle</button>
+  </div>
+
+  <!-- D3.js Chart -->
+  <div class="box">
+    <h2>D3.js (Bar Chart)</h2>
+    <svg id="chart" width="400" height="300" style="border:1px solid black;"></svg>
+  </div>
+
+  <script>
+    // ---------- Fabric.js Example ----------
+    const canvas = new fabric.Canvas("c");
+
+    const rect = new fabric.Rect({
+      left: 100,
+      top: 100,
+      fill: "blue",
+      width: 120,
+      height: 80
+    });
+
+    const circle = new fabric.Circle({
+      left: 200,
+      top: 50,
+      radius: 40,
+      fill: "green"
+    });
+
+    canvas.add(rect, circle); // দুইটা shape add করা
+
+    // ---------- SVG.js Example ----------
+    const draw = SVG().addTo("#drawing").size(400, 300);
+
+    const svgCircle = draw.circle(80).fill("red").move(50, 100);
+
+    document.getElementById("animateBtn").addEventListener("click", () => {
+      svgCircle.animate(2000).move(250, 100).fill("orange");
+    });
+
+    // ---------- D3.js Bar Chart Example ----------
+    const data = [30, 80, 45, 60, 20, 90, 55]; // Chart data
+
+    const svg = d3.select("#chart"),
+          width = +svg.attr("width"),
+          height = +svg.attr("height");
+
+    const x = d3.scaleBand()
+                .domain(data.map((d, i) => i))
+                .range([0, width])
+                .padding(0.2);
+
+    const y = d3.scaleLinear()
+                .domain([0, d3.max(data)])
+                .nice()
+                .range([height, 0]);
+
+    // Bars
+    svg.selectAll("rect")
+      .data(data)
+      .enter().append("rect")
+      .attr("x", (d, i) => x(i))
+      .attr("y", d => y(d))
+      .attr("width", x.bandwidth())
+      .attr("height", d => height - y(d))
+      .attr("fill", "teal");
+
+    // Axes
+    const xAxis = d3.axisBottom(x).tickFormat(i => `Item ${i+1}`);
+    const yAxis = d3.axisLeft(y);
+
+    svg.append("g")
+       .attr("transform", `translate(0,${height})`)
+       .call(xAxis)
+       .selectAll("text")
+       .attr("transform", "rotate(-40)")
+       .style("text-anchor", "end");
+
+    svg.append("g").call(yAxis);
+  </script>
+</body>
+</html>

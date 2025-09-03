@@ -27,4 +27,21 @@ document.addEventListener("DOMContentLoaded", (event) => {
       yoyo: true, // উল্টো দিকে অ্যানিমেশন হবে
     }
   );
+
+
+  //Box
+  let box = document.querySelector(".box");
+  let circle = document.querySelector(".circle"); 
+
+  gsap.to([box, circle], {
+    duration: 3,
+    x: 600,
+    rotation: 360,
+    ease: "power2.out",
+  });
+
+
+
+
+
 });
